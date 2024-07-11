@@ -48,8 +48,11 @@ def dump_json(songs):
                     # Reduce results to array of titles and video IDs
                     search_results = ym.search(query, filter="songs")
                     if len(search_results) == 0:
-                        log.error(f"No results found for {query}, skipping.")
-                        continue
+                        log.warning(f"No song results found for {query}, retrying.")
+                        search_results = ym.search(query, filter="videos")
+                        if len(search_results) == 0:
+                            log.error(f"No search results found for {query}, skipping.")
+                            continue
                     result_titles, result_ids = zip(*map(
                         lambda d: (f"{d['artists'][0]['name']} - {d['title']}".replace(":", "").replace('"', ""), d["videoId"]),
                         search_results
@@ -220,8 +223,11 @@ def find_and_download_songs(kwargs):
                 # Reduce search results to array of titles and video IDs
                 search_results = ym.search(query, filter="songs")
                 if len(search_results) == 0:
-                    log.error(f"No results found for {query}, skipping.")
-                    continue
+                    log.warning(f"No song results found for {query}, retrying.")
+                    search_results = ym.search(query, filter="videos")
+                    if len(search_results) == 0:
+                        log.error(f"No search results found for {query}, skipping.")
+                        continue
                 result_titles, result_ids = zip(*map(
                     lambda d: (f"{d['artists'][0]['name']} - {d['title']}".replace(":", "").replace('"', ""), d["videoId"]),
                     search_results
